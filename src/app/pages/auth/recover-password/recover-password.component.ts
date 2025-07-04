@@ -209,7 +209,7 @@ export class RecoverPasswordComponent {
     private router: Router,
     private snackBar: MatSnackBar,
   ) {
-    // Redirigir si ya está autenticado
+
     if (localStorage.getItem("isLoggedIn") === "true") {
       this.router.navigate(["/dashboard"])
     }
@@ -234,7 +234,7 @@ export class RecoverPasswordComponent {
     if (this.recoverForm.valid) {
       this.isLoading = true
 
-      // Simulación de recuperación de contraseña
+
       setTimeout(() => {
         this.isLoading = false
         this.snackBar.open("Contraseña actualizada correctamente", "Cerrar", {

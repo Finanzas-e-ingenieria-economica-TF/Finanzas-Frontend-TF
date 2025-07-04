@@ -163,7 +163,7 @@ import { MatIconModule } from "@angular/material/icon"
 })
 export class WelcomeComponent {
   constructor(private router: Router) {
-    // Redirigir si ya está autenticado
+
     if (localStorage.getItem("isLoggedIn") === "true") {
       this.router.navigate(["/dashboard"])
     }

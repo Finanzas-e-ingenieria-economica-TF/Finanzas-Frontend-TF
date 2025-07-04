@@ -74,10 +74,10 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Verificar si el usuario está autenticado
+
     this.checkAuthStatus()
 
-    // Suscribirse a cambios en el estado de autenticación
+
     this.authService.currentUser$.subscribe((user) => {
       this.isLoggedIn = !!user
     })
@@ -86,14 +86,14 @@ export class AppComponent implements OnInit {
   checkAuthStatus() {
     this.isLoggedIn = localStorage.getItem("isLoggedIn") === "true"
 
-    // Redirigir a la página correcta según el estado de autenticación
+
     if (this.isLoggedIn) {
-      // Si está autenticado y está en la ruta raíz, redirigir al dashboard
+
       if (window.location.pathname === "/" || window.location.pathname === "") {
         this.router.navigate(["/dashboard"])
       }
     } else {
-      // Si no está autenticado, redirigir al login
+
       if (
         !window.location.pathname.includes("/welcome") &&
         !window.location.pathname.includes("/login") &&

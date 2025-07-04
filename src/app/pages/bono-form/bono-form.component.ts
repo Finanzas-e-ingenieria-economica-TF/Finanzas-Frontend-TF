@@ -328,19 +328,19 @@ export class BonoFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Cargar configuración
+
     this.bonoService.getConfiguracion().subscribe({
       next: (config) => {
         this.configuracion = config
 
-        // Verificar si estamos en modo edición
+
         this.bonoId = this.route.snapshot.paramMap.get("id")
         this.isEditMode = !!this.bonoId
 
         if (this.isEditMode && this.bonoId) {
           this.cargarBono(this.bonoId)
         } else {
-          // Establecer valores por defecto
+
           this.bonoForm.patchValue({
             moneda: this.configuracion.monedaDefecto,
             tipoTasa: this.configuracion.tipoTasaDefecto,
@@ -359,7 +359,7 @@ export class BonoFormComponent implements OnInit {
       },
     })
 
-    // Escuchar cambios en el tipo de tasa
+
     this.bonoForm.get("tipoTasa")?.valueChanges.subscribe((value) => {
       const capitalizacionControl = this.bonoForm.get("capitalizacion")
       if (value === "nominal") {
@@ -371,7 +371,7 @@ export class BonoFormComponent implements OnInit {
       capitalizacionControl?.updateValueAndValidity()
     })
 
-    // Add custom validation for grace periods
+
     this.bonoForm.get("plazoTotal")?.valueChanges.subscribe(() => {
       this.updateGracePeriodValidation()
     })
@@ -392,12 +392,12 @@ export class BonoFormComponent implements OnInit {
     const plazoGraciaTotalControl = this.bonoForm.get("plazoGraciaTotal")
     const plazoGraciaParcialControl = this.bonoForm.get("plazoGraciaParcial")
 
-    // Update validators
+
     plazoGraciaTotalControl?.setValidators([Validators.min(0), Validators.max(plazoTotal)])
 
     plazoGraciaParcialControl?.setValidators([Validators.min(0), Validators.max(plazoTotal - plazoGraciaTotal)])
 
-    // Update validity without emitting new events to prevent infinite loops
+
     plazoGraciaTotalControl?.updateValueAndValidity({ emitEvent: false })
     plazoGraciaParcialControl?.updateValueAndValidity({ emitEvent: false })
   }
@@ -431,7 +431,7 @@ export class BonoFormComponent implements OnInit {
     this.bonoService.getBonoById(bonoId).subscribe({
       next: (bono) => {
         if (bono) {
-          // Convertir la fecha de string a Date para el formulario
+
           const fechaEmision = typeof bono.fechaEmision === "string" ? new Date(bono.fechaEmision) : bono.fechaEmision
 
           this.bonoForm.patchValue({

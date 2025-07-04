@@ -46,7 +46,7 @@ export class AuthService {
   private apiUrl = environment.apiUrl
 
   constructor(private http: HttpClient) {
-    // Verificar si hay un usuario en localStorage
+
     const storedUser = localStorage.getItem("user")
     const token = localStorage.getItem("token")
     console.log("AuthService init - Token:", token ? "exists" : "not found")
@@ -66,7 +66,7 @@ export class AuthService {
         console.log("Login successful, token received:", response.token ? "yes" : "no")
         console.log("User data:", response.usuario)
 
-        // Guardar token y usuario en localStorage
+
         localStorage.setItem("token", response.token)
         localStorage.setItem("user", JSON.stringify(response.usuario))
         localStorage.setItem("isLoggedIn", "true")
@@ -114,7 +114,7 @@ export class AuthService {
   updateProfile(userData: RegisterRequest): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/auth/profile`, userData).pipe(
       tap((response: any) => {
-        // Manejar diferentes estructuras de respuesta del backend
+
         if (response && response.usuario) {
           localStorage.setItem("user", JSON.stringify(response.usuario))
           this.currentUserSubject.next(response.usuario)
@@ -122,7 +122,7 @@ export class AuthService {
           localStorage.setItem("user", JSON.stringify(response.data))
           this.currentUserSubject.next(response.data)
         } else if (response && response.id) {
-          // Si la respuesta es directamente el usuario
+
           localStorage.setItem("user", JSON.stringify(response))
           this.currentUserSubject.next(response)
         }

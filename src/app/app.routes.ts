@@ -39,12 +39,7 @@ export const routes: Routes = [
     loadComponent: () => import("./pages/bono-detalle/bono-detalle.component").then((m) => m.BonoDetalleComponent),
     canActivate: [authGuard],
   },
-  // Comentar o eliminar la ruta de configuración si no es necesaria
-  // {
-  //   path: "configuracion",
-  //   loadComponent: () => import("./pages/configuracion/configuracion.component").then((m) => m.ConfiguracionComponent),
-  //   canActivate: [authGuard],
-  // },
+
   {
     path: "profile",
     loadComponent: () => import("./pages/profile/profile.component").then((m) => m.ProfileComponent),

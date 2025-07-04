@@ -275,7 +275,7 @@ export class DashboardComponent implements OnInit {
       },
       error: (error) => {
         console.error("Error al cargar resumen:", error)
-        // Calcular resumen localmente si falla el endpoint
+
         this.calcularResumenLocal()
       },
     })

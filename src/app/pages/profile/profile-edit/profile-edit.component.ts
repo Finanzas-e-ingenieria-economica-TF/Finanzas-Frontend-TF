@@ -281,7 +281,7 @@ export class ProfileEditComponent implements OnInit {
         username: this.user?.username || "",
         nombre: this.profileForm.value.nombre,
         email: this.profileForm.value.email,
-        password: "", // El backend puede requerir este campo, pero no lo cambiaremos
+        password: "",
       }
 
       this.authService.updateProfile(userData).subscribe({

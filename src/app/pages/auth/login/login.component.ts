@@ -252,7 +252,7 @@ export class LoginComponent {
     private router: Router,
     private snackBar: MatSnackBar,
   ) {
-    // Redirigir si ya está autenticado
+
     if (localStorage.getItem("isLoggedIn") === "true") {
       this.router.navigate(["/dashboard"])
     }

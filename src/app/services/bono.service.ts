@@ -22,7 +22,7 @@ export class BonoService {
 
   constructor(private http: HttpClient) {}
 
-  // Métodos para gestionar bonos
+
   getBonos(): Observable<Bono[]> {
     return this.http.get<Bono[]>(`${this.apiUrl}/bonos`).pipe(
       tap((bonos) => {
@@ -46,13 +46,13 @@ export class BonoService {
   }
 
   saveBono(bono: Bono): Observable<Bono> {
-    // Convertir la fecha de Date a string si es necesario
+
     const bonoData = this.prepareBonoForApi(bono)
 
     console.log("Datos del bono a enviar:", bonoData)
 
     if (bono.id) {
-      // Actualizar bono existente
+
       return this.http.put<any>(`${this.apiUrl}/bonos/${bono.id}`, bonoData).pipe(
         map((response) => response.bono || response),
         tap(() => this.refreshBonos()),
@@ -63,7 +63,7 @@ export class BonoService {
         }),
       )
     } else {
-      // Crear nuevo bono
+
       return this.http.post<any>(`${this.apiUrl}/bonos`, bonoData).pipe(
         map((response) => response.bono || response),
         tap(() => this.refreshBonos()),
@@ -96,7 +96,7 @@ export class BonoService {
     )
   }
 
-  // Métodos para configuración (mantenidos localmente ya que no hay endpoint)
+
   getConfiguracion(): Observable<Configuracion> {
     const configString = localStorage.getItem("configuracion")
     if (configString) {
@@ -118,7 +118,6 @@ export class BonoService {
     return of(this.configuracion)
   }
 
-  // Métodos para cálculos de bonos (mantenidos localmente)
   calcularFlujoCaja(bono: Bono): ResultadosBono {
     const flujos: FlujoCaja[] = []
     const periodosTotales = bono.plazoTotal
@@ -199,27 +198,26 @@ export class BonoService {
     }
   }
 
-  // Métodos privados auxiliares
+
   private prepareBonoForApi(bono: Bono): any {
     const bonoData = { ...bono }
 
-    // Convertir fechaEmision de Date a string si es necesario
     if (bonoData.fechaEmision) {
       let fecha: Date;
       if (typeof bonoData.fechaEmision === "string") {
         fecha = new Date(bonoData.fechaEmision);
       } else {
-        // Si no es string, es un objeto Date
+
         fecha = bonoData.fechaEmision;
       }
 
       if (!isNaN(fecha.getTime())) {
-        // Asignar como string en formato YYYY-MM-DD
+
         (bonoData as any).fechaEmision = fecha.toISOString().split("T")[0];
       }
     }
 
-    // Convertir tipoTasa a mayúsculas para coincidir con el enum del backend
+
     if (bonoData.tipoTasa) {
       (bonoData as any).tipoTasa = bonoData.tipoTasa.toUpperCase();
     }

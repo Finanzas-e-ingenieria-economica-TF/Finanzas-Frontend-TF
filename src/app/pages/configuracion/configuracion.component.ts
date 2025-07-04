@@ -187,7 +187,7 @@ export class ConfiguracionComponent implements OnInit {
   ngOnInit(): void {
     this.cargarConfiguracion()
 
-    // Escuchar cambios en el tipo de tasa
+
     this.configForm.get("tipoTasaDefecto")?.valueChanges.subscribe((value) => {
       const capitalizacionControl = this.configForm.get("capitalizacionDefecto")
       if (value === "nominal") {
@@ -224,7 +224,7 @@ export class ConfiguracionComponent implements OnInit {
   eliminarMoneda(index: number): void {
     this.monedasArray.removeAt(index)
 
-    // Si se elimina la moneda por defecto, actualizar
+
     const monedaDefecto = this.configForm.get("monedaDefecto")?.value
     if (!this.getMonedasArray().includes(monedaDefecto) && this.monedasArray.length > 0) {
       this.configForm.get("monedaDefecto")?.setValue(this.monedasArray.at(0).value)
@@ -234,17 +234,17 @@ export class ConfiguracionComponent implements OnInit {
   cargarConfiguracion(): void {
     this.bonoService.getConfiguracion().subscribe({
       next: (config) => {
-        // Limpiar el array de monedas
+
         while (this.monedasArray.length > 0) {
           this.monedasArray.removeAt(0)
         }
 
-        // Agregar las monedas
+
         config.monedas.forEach((moneda) => {
           this.monedasArray.push(this.fb.control(moneda, Validators.required))
         })
 
-        // Actualizar el resto de valores
+        
         this.configForm.patchValue({
           monedaDefecto: config.monedaDefecto,
           tipoTasaDefecto: config.tipoTasaDefecto,

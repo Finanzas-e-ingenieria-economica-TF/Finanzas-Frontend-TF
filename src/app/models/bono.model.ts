@@ -1,18 +1,18 @@
 export interface Bono {
-  id?: number // Cambiado de string a number para coincidir con Long del backend
+  id?: number
   nombre: string
-  valorNominal: number // Se mantiene como number, el backend maneja BigDecimal
-  tasaInteres: number // Se mantiene como number, el backend maneja BigDecimal
-  tipoTasa: "efectiva" | "nominal" // Se mantiene como string en frontend
+  valorNominal: number
+  tasaInteres: number
+  tipoTasa: "efectiva" | "nominal"
   capitalizacion?: number
   plazoTotal: number
   frecuenciaPago: number
   moneda: string
   plazoGraciaTotal: number
   plazoGraciaParcial: number
-  fechaEmision: string // Cambiado a string para manejar LocalDate del backend (yyyy-MM-dd)
-  fechaCreacion?: string // Cambiado a string para manejar LocalDateTime del backend
-  fechaModificacion?: string // Cambiado a string para manejar LocalDateTime del backend
+  fechaEmision: string
+  fechaCreacion?: string
+  fechaModificacion?: string
 }
 
 export interface FlujoCaja {
@@ -44,7 +44,7 @@ export interface Configuracion {
   capitalizacionDefecto?: number
 }
 
-// Interfaces para las respuestas del backend
+
 export interface ApiResponse<T> {
   message?: string
   data?: T

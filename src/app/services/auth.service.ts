@@ -66,7 +66,6 @@ export class AuthService {
         console.log("Login successful, token received:", response.token ? "yes" : "no")
         console.log("User data:", response.usuario)
 
-
         localStorage.setItem("token", response.token)
         localStorage.setItem("user", JSON.stringify(response.usuario))
         localStorage.setItem("isLoggedIn", "true")

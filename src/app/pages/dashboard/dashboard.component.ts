@@ -12,7 +12,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
 import {  MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar"
 import {  MatDialog, MatDialogModule } from "@angular/material/dialog"
 import  { BonoService } from "../../services/bono.service"
-import { Bono } from "../../models/bono.model"
+import  { Bono } from "../../models/bono.model"
 
 interface ResumenBonos {
   totalBonos: number
@@ -55,15 +55,15 @@ interface ResumenBonos {
         <mat-card-content>
           <div class="summary-grid">
             <div class="summary-item">
-              <div class="summary-number">{{resumenBonos?.totalBonos}}</div>
+              <div class="summary-number">{{resumenBonos.totalBonos}}</div>
               <div class="summary-label">Total de Bonos</div>
             </div>
             <div class="summary-item">
-              <div class="summary-number">{{resumenBonos?.valorNominalTotal | currency:'PEN':'symbol':'1.0-0'}}</div>
+              <div class="summary-number">{{resumenBonos.valorNominalTotal | currency:'PEN':'symbol':'1.0-0'}}</div>
               <div class="summary-label">Valor Nominal Total</div>
             </div>
             <div class="summary-item">
-              <div class="summary-number">{{resumenBonos?.tasaPromedio | percent:'1.2-2'}}</div>
+              <div class="summary-number">{{resumenBonos.tasaPromedio | percent:'1.2-2'}}</div>
               <div class="summary-label">Tasa Promedio</div>
             </div>
           </div>
@@ -238,7 +238,13 @@ export class DashboardComponent implements OnInit {
   bonos: Bono[] = []
   isLoading = true
   displayedColumns: string[] = ["nombre", "valorNominal", "tasaInteres", "plazo", "fechaEmision", "acciones"]
-  resumenBonos: ResumenBonos | undefined
+
+  // Inicializar con valores por defecto para evitar undefined
+  resumenBonos: ResumenBonos = {
+    totalBonos: 0,
+    valorNominalTotal: 0,
+    tasaPromedio: 0,
+  }
 
   constructor(
     private bonoService: BonoService,
@@ -249,7 +255,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarBonos()
-    this.cargarResumen()
   }
 
   cargarBonos(): void {
@@ -258,30 +263,25 @@ export class DashboardComponent implements OnInit {
       next: (bonos) => {
         this.bonos = bonos
         this.isLoading = false
+        // Calcular resumen inmediatamente después de cargar bonos
+        this.calcularResumen()
       },
       error: (error) => {
         this.isLoading = false
         this.snackBar.open("Error al cargar los bonos", "Cerrar", {
           duration: 5000,
         })
+        // Resetear resumen en caso de error
+        this.resumenBonos = {
+          totalBonos: 0,
+          valorNominalTotal: 0,
+          tasaPromedio: 0,
+        }
       },
     })
   }
 
-  cargarResumen(): void {
-    this.bonoService.getResumenBonos().subscribe({
-      next: (resumen) => {
-        this.resumenBonos = resumen
-      },
-      error: (error) => {
-        console.error("Error al cargar resumen:", error)
-
-        this.calcularResumenLocal()
-      },
-    })
-  }
-
-  private calcularResumenLocal(): void {
+  private calcularResumen(): void {
     this.resumenBonos = {
       totalBonos: this.bonos.length,
       valorNominalTotal: this.getTotalValorNominal(),
@@ -308,8 +308,8 @@ export class DashboardComponent implements OnInit {
           this.snackBar.open("Bono eliminado correctamente", "Cerrar", {
             duration: 3000,
           })
+          // Recargar bonos y recalcular resumen
           this.cargarBonos()
-          this.cargarResumen()
         },
         error: () => {
           this.snackBar.open("Error al eliminar el bono", "Cerrar", {
@@ -320,13 +320,13 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  getTotalValorNominal(): number {
-    return this.bonos.reduce((total, bono) => total + bono.valorNominal, 0)
+  private getTotalValorNominal(): number {
+    return this.bonos.reduce((total, bono) => total + (bono.valorNominal || 0), 0)
   }
 
-  getPromedioTasa(): number {
+  private getPromedioTasa(): number {
     if (this.bonos.length === 0) return 0
-    const totalTasa = this.bonos.reduce((total, bono) => total + bono.tasaInteres, 0)
+    const totalTasa = this.bonos.reduce((total, bono) => total + (bono.tasaInteres || 0), 0)
     return totalTasa / this.bonos.length
   }
 }

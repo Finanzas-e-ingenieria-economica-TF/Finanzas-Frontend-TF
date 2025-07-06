@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 import { BehaviorSubject, type Observable, of, throwError } from "rxjs"
-import { HttpClient } from "@angular/common/http"
+import  { HttpClient } from "@angular/common/http"
 import { map, catchError, tap } from "rxjs/operators"
 import { environment } from ".././environments/environment"
 import  { Bono, FlujoCaja, ResultadosBono, Configuracion, ResumenBonos } from "../models/bono.model"
@@ -21,7 +21,6 @@ export class BonoService {
   }
 
   constructor(private http: HttpClient) {}
-
 
   getBonos(): Observable<Bono[]> {
     return this.http.get<Bono[]>(`${this.apiUrl}/bonos`).pipe(
@@ -46,13 +45,11 @@ export class BonoService {
   }
 
   saveBono(bono: Bono): Observable<Bono> {
-
     const bonoData = this.prepareBonoForApi(bono)
 
     console.log("Datos del bono a enviar:", bonoData)
 
     if (bono.id) {
-
       return this.http.put<any>(`${this.apiUrl}/bonos/${bono.id}`, bonoData).pipe(
         map((response) => response.bono || response),
         tap(() => this.refreshBonos()),
@@ -63,7 +60,6 @@ export class BonoService {
         }),
       )
     } else {
-
       return this.http.post<any>(`${this.apiUrl}/bonos`, bonoData).pipe(
         map((response) => response.bono || response),
         tap(() => this.refreshBonos()),
@@ -95,7 +91,6 @@ export class BonoService {
       }),
     )
   }
-
 
   getConfiguracion(): Observable<Configuracion> {
     const configString = localStorage.getItem("configuracion")
@@ -130,6 +125,7 @@ export class BonoService {
     }
 
     const tasaEfectivaPeriodica = this.calcularTasaEfectivaPeriodica(bono)
+    // MÉTODO ALEMÁN: Amortización constante
     const cuotaAmortizacion = bono.valorNominal / periodosAmortizacion
 
     let saldo = bono.valorNominal
@@ -140,39 +136,41 @@ export class BonoService {
       fechaPago = new Date(fechaPago)
       fechaPago.setDate(fechaPago.getDate() + diasPorPeriodo)
 
+      const saldoInicial = saldo
       const interes = saldo * tasaEfectivaPeriodica
       let amortizacion = 0
       let cuotaPeriodo = 0
 
       if (i <= periodosGraciaTotal) {
+        // GRACIA TOTAL: No se paga nada, saldo se mantiene
         amortizacion = 0
         cuotaPeriodo = 0
-        saldo = saldo + interes
+        // El saldo NO cambia en gracia total
       } else if (i <= periodosGraciaTotal + periodosGraciaParcial) {
+        // GRACIA PARCIAL: Solo se pagan intereses
         amortizacion = 0
         cuotaPeriodo = interes
+        // El saldo NO cambia en gracia parcial
       } else {
+        // PERÍODO NORMAL: Método alemán (amortización constante)
         amortizacion = cuotaAmortizacion
         cuotaPeriodo = amortizacion + interes
         saldo = saldo - amortizacion
       }
 
-      const flujoEmisor = -cuotaPeriodo
-      const flujoBonista = cuotaPeriodo
+      const flujoEmisor = i === 0 ? -bono.valorNominal : cuotaPeriodo
+      const flujoBonista = i === 0 ? bono.valorNominal : -cuotaPeriodo
 
       flujos.push({
         periodo: i,
         fechaPago: new Date(fechaPago),
-        saldoInicial:
-          i <= periodosGraciaTotal
-            ? saldo - interes
-            : saldo + (i <= periodosGraciaTotal + periodosGraciaParcial ? 0 : amortizacion),
+        saldoInicial,
         interes,
         cuota: cuotaPeriodo,
         amortizacion,
         saldoFinal: saldo,
-        flujoEmisor,
-        flujoBonista,
+        flujoEmisor: -cuotaPeriodo, // Negativo para el emisor (paga)
+        flujoBonista: cuotaPeriodo, // Positivo para el bonista (recibe)
       })
     }
 
@@ -180,8 +178,10 @@ export class BonoService {
     const duracionModificada = duracion / (1 + tasaEfectivaPeriodica)
     const convexidad = this.calcularConvexidad(flujos, bono, tasaEfectivaPeriodica)
 
-    const flujosTCEA = [bono.valorNominal, ...flujos.map((f) => f.flujoEmisor)]
-    const flujosTREA = [-bono.valorNominal, ...flujos.map((f) => f.flujoBonista)]
+    // Para TCEA: Flujo del emisor (paga el bono inicialmente, recibe pagos)
+    const flujosTCEA = [-bono.valorNominal, ...flujos.map((f) => f.cuota)]
+    // Para TREA: Flujo del bonista (paga inicialmente, recibe pagos)
+    const flujosTREA = [-bono.valorNominal, ...flujos.map((f) => f.cuota)]
 
     const tcea = this.calcularTIR(flujosTCEA, bono.frecuenciaPago)
     const trea = this.calcularTIR(flujosTREA, bono.frecuenciaPago)
@@ -198,28 +198,24 @@ export class BonoService {
     }
   }
 
-
   private prepareBonoForApi(bono: Bono): any {
     const bonoData = { ...bono }
 
     if (bonoData.fechaEmision) {
-      let fecha: Date;
+      let fecha: Date
       if (typeof bonoData.fechaEmision === "string") {
-        fecha = new Date(bonoData.fechaEmision);
+        fecha = new Date(bonoData.fechaEmision)
       } else {
-
-        fecha = bonoData.fechaEmision;
+        fecha = bonoData.fechaEmision
       }
 
       if (!isNaN(fecha.getTime())) {
-
-        (bonoData as any).fechaEmision = fecha.toISOString().split("T")[0];
+        ;(bonoData as any).fechaEmision = fecha.toISOString().split("T")[0]
       }
     }
 
-
     if (bonoData.tipoTasa) {
-      (bonoData as any).tipoTasa = bonoData.tipoTasa.toUpperCase();
+      ;(bonoData as any).tipoTasa = bonoData.tipoTasa.toUpperCase()
     }
 
     return bonoData

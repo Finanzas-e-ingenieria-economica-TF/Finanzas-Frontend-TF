@@ -1,6 +1,6 @@
 import { Component, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import  { ActivatedRoute, Router } from "@angular/router"
+import { ActivatedRoute, Router } from "@angular/router"
 import { MatCardModule } from "@angular/material/card"
 import { MatButtonModule } from "@angular/material/button"
 import { MatIconModule } from "@angular/material/icon"
@@ -82,6 +82,26 @@ import { Bono, ResultadosBono } from "../../models/bono.model"
                 <div class="info-label">Fecha de Emisión</div>
                 <div class="info-value">{{bono.fechaEmision | date:'dd/MM/yyyy'}}</div>
               </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>info</mat-icon>
+              Información del Método de Cálculo
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metodo-info">
+              <p><strong>Método Alemán:</strong> Sistema de amortización con cuotas de capital constantes.</p>
+              <p><strong>Características:</strong></p>
+              <ul>
+                <li>Amortización constante: {{(bono.valorNominal / (bono.plazoTotal - bono.plazoGraciaTotal - bono.plazoGraciaParcial)) | currency:bono.moneda}}</li>
+                <li>Intereses decrecientes sobre saldo pendiente</li>
+                <li>Cuotas decrecientes en el tiempo</li>
+              </ul>
             </div>
           </mat-card-content>
         </mat-card>

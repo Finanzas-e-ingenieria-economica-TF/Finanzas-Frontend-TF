@@ -52,7 +52,7 @@ import  { AuthService, User } from "../../services/auth.service"
                 <div class="menu-icon">
                   <mat-icon>lock</mat-icon>
                 </div>
-                <span class="menu-text">Manejo De Contraseñas</span>
+                <span class="menu-text">Cambiar Contraseña</span>
                 <mat-icon class="menu-arrow">chevron_right</mat-icon>
               </div>
             </mat-list-item>

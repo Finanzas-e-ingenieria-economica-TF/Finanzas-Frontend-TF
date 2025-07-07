@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 import { BehaviorSubject, type Observable, throwError } from "rxjs"
-import { HttpClient } from "@angular/common/http"
+import  { HttpClient } from "@angular/common/http"
 import { tap, catchError } from "rxjs/operators"
 import { environment } from ".././environments/environment"
 
@@ -67,8 +67,7 @@ export class AuthService {
 
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, loginData).pipe(
       tap((response: LoginResponse) => {
-        console.log("Login successful, token received:", response.token ? "yes" : "no")
-        console.log("User data:", response.usuario)
+        console.log("Login successful, response:", response)
 
         localStorage.setItem("token", response.token)
         localStorage.setItem("user", JSON.stringify(response.usuario))
@@ -85,6 +84,9 @@ export class AuthService {
 
   register(userData: RegisterRequest): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/auth/register`, userData).pipe(
+      tap((response: any) => {
+        console.log("Register response:", response)
+      }),
       catchError((error) => {
         console.error("Error en registro:", error)
         const errorMessage = error.error?.error || error.error?.message || "Error de conexión con el servidor"
@@ -95,6 +97,9 @@ export class AuthService {
 
   changePassword(passwordData: ChangePasswordRequest): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/auth/change-password`, passwordData).pipe(
+      tap((response: any) => {
+        console.log("Change password response:", response)
+      }),
       catchError((error) => {
         console.error("Error cambiando contraseña:", error)
         const errorMessage = error.error?.error || error.error?.message || "Error de conexión con el servidor"
@@ -114,6 +119,7 @@ export class AuthService {
   getCurrentUser(): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/auth/me`).pipe(
       tap((user: User) => {
+        console.log("Current user response:", user)
         localStorage.setItem("user", JSON.stringify(user))
         this.currentUserSubject.next(user)
       }),
@@ -127,15 +133,11 @@ export class AuthService {
   updateProfile(userData: RegisterRequest): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/auth/profile`, userData).pipe(
       tap((response: any) => {
+        console.log("Profile update response:", response)
+
         if (response && response.usuario) {
           localStorage.setItem("user", JSON.stringify(response.usuario))
           this.currentUserSubject.next(response.usuario)
-        } else if (response && response.data) {
-          localStorage.setItem("user", JSON.stringify(response.data))
-          this.currentUserSubject.next(response.data)
-        } else if (response && response.id) {
-          localStorage.setItem("user", JSON.stringify(response))
-          this.currentUserSubject.next(response)
         }
       }),
       catchError((error) => {

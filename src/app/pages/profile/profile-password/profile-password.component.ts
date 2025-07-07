@@ -1,4 +1,4 @@
-import { Component } from "@angular/core"
+import { Component, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import {  Router, RouterLink } from "@angular/router"
 import {  FormBuilder, type FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
@@ -9,7 +9,7 @@ import { MatFormFieldModule } from "@angular/material/form-field"
 import { MatInputModule } from "@angular/material/input"
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
 import {  MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar"
-import { AuthService } from "../../../services/auth.service"
+import { AuthService, User } from "../../../services/auth.service"
 
 @Component({
   selector: "app-profile-password",
@@ -38,8 +38,13 @@ import { AuthService } from "../../../services/auth.service"
       <div class="password-content">
         <div class="password-card">
           <h2 class="section-title">
-            Ingrese Su Contraseña Actual Y La Nueva Contraseña Que Desea Establecer
+            Ingrese Su Contraseña Actual Y La Nueva Contraseña
           </h2>
+
+          <div class="security-info">
+            <mat-icon class="security-icon">security</mat-icon>
+            <p>Por seguridad, necesitamos verificar su contraseña actual antes de cambiarla.</p>
+          </div>
 
           <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()">
             <div class="form-field">
@@ -111,17 +116,12 @@ import { AuthService } from "../../../services/auth.service"
               </mat-form-field>
             </div>
 
-            <div class="security-tips">
-              <h3 class="tips-title">
-                <mat-icon>security</mat-icon>
-                Consejos de Seguridad
-              </h3>
-              <ul class="tips-list">
-                <li>Use al menos 6 caracteres</li>
-                <li>Combine letras mayúsculas y minúsculas</li>
-                <li>Incluya números y símbolos</li>
-                <li>Evite información personal obvia</li>
-                <li>No reutilice contraseñas de otras cuentas</li>
+            <div class="password-requirements">
+              <h4>Requisitos de la contraseña:</h4>
+              <ul>
+                <li>Mínimo 6 caracteres</li>
+                <li>Se recomienda usar una combinación de letras, números y símbolos</li>
+                <li>Evite usar información personal fácil de adivinar</li>
               </ul>
             </div>
 
@@ -198,6 +198,28 @@ import { AuthService } from "../../../services/auth.service"
         font-weight: normal;
       }
 
+      .security-info {
+        display: flex;
+        align-items: center;
+        background-color: #fff3e0;
+        border: 1px solid #ffcc02;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .security-icon {
+        color: #ff9800;
+        margin-right: 0.5rem;
+        font-size: 20px;
+      }
+
+      .security-info p {
+        margin: 0;
+        color: #e65100;
+        font-size: 14px;
+      }
+
       .field-label {
         color: #555;
         font-size: 14px;
@@ -213,32 +235,29 @@ import { AuthService } from "../../../services/auth.service"
         width: 100%;
       }
 
-      .security-tips {
+      .password-requirements {
         background-color: #f0f8ff;
-        border: 1px solid #b3d9ff;
+        border: 1px solid #2196f3;
         border-radius: 8px;
         padding: 1rem;
-        margin: 1.5rem 0;
+        margin-bottom: 1.5rem;
       }
 
-      .tips-title {
+      .password-requirements h4 {
         color: #1976d2;
-        font-size: 14px;
         margin-top: 0;
         margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        font-size: 14px;
       }
 
-      .tips-list {
+      .password-requirements ul {
         margin: 0;
         padding-left: 1.5rem;
         color: #555;
         font-size: 13px;
       }
 
-      .tips-list li {
+      .password-requirements li {
         margin-bottom: 0.25rem;
       }
 
@@ -273,9 +292,10 @@ import { AuthService } from "../../../services/auth.service"
     `,
   ],
 })
-export class ProfilePasswordComponent {
+export class ProfilePasswordComponent implements OnInit {
   passwordForm: FormGroup
   isLoading = false
+  user: User | null = null
   hideCurrentPassword = true
   hideNewPassword = true
   hideConfirmPassword = true
@@ -286,7 +306,15 @@ export class ProfilePasswordComponent {
     private router: Router,
     private snackBar: MatSnackBar,
   ) {
-    this.passwordForm = this.fb.group(
+    this.passwordForm = this.createForm()
+  }
+
+  ngOnInit() {
+    this.user = this.authService.currentUser
+  }
+
+  createForm(): FormGroup {
+    return this.fb.group(
       {
         currentPassword: ["", Validators.required],
         newPassword: ["", [Validators.required, Validators.minLength(6)]],

@@ -7,9 +7,9 @@ import { MatIconModule } from "@angular/material/icon"
 import { MatTableModule } from "@angular/material/table"
 import { MatTabsModule } from "@angular/material/tabs"
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
-import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar"
+import {  MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar"
 import { BonoService } from "../../services/bono.service"
-import { Bono, ResultadosBono } from "../../models/bono.model"
+import  { Bono, ResultadosBono } from "../../models/bono.model"
 
 @Component({
   selector: "app-bono-detalle",
@@ -58,8 +58,8 @@ import { Bono, ResultadosBono } from "../../models/bono.model"
                 <div class="info-label">Tasa de Interés</div>
                 <div class="info-value">
                   {{bono.tasaInteres | percent:'1.2-2'}}
-                  ({{bono.tipoTasa === 'efectiva' ? 'Efectiva' : 'Nominal'}})
-                  <span *ngIf="bono.tipoTasa === 'nominal'">
+                  ({{bono.tipoTasa?.toUpperCase() === 'EFECTIVA' ? 'Efectiva' : 'Nominal'}})
+                  <span *ngIf="bono.tipoTasa?.toUpperCase() === 'NOMINAL'">
                     - Capitalización: {{bono.capitalizacion}} veces/año
                   </span>
                 </div>

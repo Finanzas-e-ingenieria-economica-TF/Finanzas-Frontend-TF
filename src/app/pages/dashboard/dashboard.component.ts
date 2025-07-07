@@ -11,11 +11,11 @@ import { MatMenuModule } from "@angular/material/menu"
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner"
 import {  MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar"
 import {  MatDialog, MatDialogModule } from "@angular/material/dialog"
-import  { BonoService } from "../../services/bono.service"
+import { BonoService } from "../../services/bono.service"
 import  { Bono } from "../../models/bono.model"
 import {
   ConfirmDialogComponent,
-   ConfirmDialogData,
+  ConfirmDialogData,
 } from "../../components/confirm-dialog/confirm-dialog.component"
 
 interface ResumenBonos {
@@ -106,7 +106,7 @@ interface ResumenBonos {
               <th mat-header-cell *matHeaderCellDef>Tasa de Interés</th>
               <td mat-cell *matCellDef="let bono">
                 {{bono.tasaInteres | percent:'1.2-2'}}
-                ({{bono.tipoTasa === 'efectiva' ? 'Efectiva' : 'Nominal'}})
+                ({{bono.tipoTasa?.toUpperCase() === 'EFECTIVA' ? 'Efectiva' : 'Nominal'}})
               </td>
             </ng-container>
 

@@ -13,6 +13,10 @@ import {  MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar"
 import {  MatDialog, MatDialogModule } from "@angular/material/dialog"
 import  { BonoService } from "../../services/bono.service"
 import  { Bono } from "../../models/bono.model"
+import {
+  ConfirmDialogComponent,
+   ConfirmDialogData,
+} from "../../components/confirm-dialog/confirm-dialog.component"
 
 interface ResumenBonos {
   totalBonos: number
@@ -302,22 +306,38 @@ export class DashboardComponent implements OnInit {
   }
 
   eliminarBono(bono: Bono): void {
-    if (confirm(`¿Está seguro que desea eliminar el bono "${bono.nombre}"?`)) {
-      this.bonoService.deleteBono(bono.id!).subscribe({
-        next: () => {
-          this.snackBar.open("Bono eliminado correctamente", "Cerrar", {
-            duration: 3000,
-          })
-          // Recargar bonos y recalcular resumen
-          this.cargarBonos()
-        },
-        error: () => {
-          this.snackBar.open("Error al eliminar el bono", "Cerrar", {
-            duration: 5000,
-          })
-        },
-      })
+    const dialogData: ConfirmDialogData = {
+      title: "Eliminar Bono",
+      message: `¿Está seguro que desea eliminar el bono "${bono.nombre}"? Esta acción no se puede deshacer.`,
+      confirmText: "Eliminar",
+      cancelText: "Cancelar",
+      type: "danger",
     }
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: "450px",
+      data: dialogData,
+      disableClose: true,
+    })
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.bonoService.deleteBono(bono.id!).subscribe({
+          next: () => {
+            this.snackBar.open("Bono eliminado correctamente", "Cerrar", {
+              duration: 3000,
+            })
+            // Recargar bonos y recalcular resumen
+            this.cargarBonos()
+          },
+          error: () => {
+            this.snackBar.open("Error al eliminar el bono", "Cerrar", {
+              duration: 5000,
+            })
+          },
+        })
+      }
+    })
   }
 
   private getTotalValorNominal(): number {

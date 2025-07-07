@@ -39,7 +39,6 @@ export const routes: Routes = [
     loadComponent: () => import("./pages/bono-detalle/bono-detalle.component").then((m) => m.BonoDetalleComponent),
     canActivate: [authGuard],
   },
-
   {
     path: "profile",
     loadComponent: () => import("./pages/profile/profile.component").then((m) => m.ProfileComponent),
@@ -55,6 +54,12 @@ export const routes: Routes = [
     path: "profile/edit",
     loadComponent: () =>
       import("./pages/profile/profile-edit/profile-edit.component").then((m) => m.ProfileEditComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: "profile/password",
+    loadComponent: () =>
+      import("./pages/profile/profile-password/profile-password.component").then((m) => m.ProfilePasswordComponent),
     canActivate: [authGuard],
   },
   { path: "", redirectTo: "/welcome", pathMatch: "full" },

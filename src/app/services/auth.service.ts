@@ -25,6 +25,11 @@ export interface RegisterRequest {
   password: string
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+}
+
 export interface LoginResponse {
   token: string
   usuario: User
@@ -46,7 +51,6 @@ export class AuthService {
   private apiUrl = environment.apiUrl
 
   constructor(private http: HttpClient) {
-
     const storedUser = localStorage.getItem("user")
     const token = localStorage.getItem("token")
     console.log("AuthService init - Token:", token ? "exists" : "not found")
@@ -89,6 +93,16 @@ export class AuthService {
     )
   }
 
+  changePassword(passwordData: ChangePasswordRequest): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/auth/change-password`, passwordData).pipe(
+      catchError((error) => {
+        console.error("Error cambiando contraseña:", error)
+        const errorMessage = error.error?.error || error.error?.message || "Error de conexión con el servidor"
+        return throwError(() => new Error(errorMessage))
+      }),
+    )
+  }
+
   logout(): void {
     console.log("Logging out user")
     localStorage.removeItem("token")
@@ -113,7 +127,6 @@ export class AuthService {
   updateProfile(userData: RegisterRequest): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/auth/profile`, userData).pipe(
       tap((response: any) => {
-
         if (response && response.usuario) {
           localStorage.setItem("user", JSON.stringify(response.usuario))
           this.currentUserSubject.next(response.usuario)
@@ -121,7 +134,6 @@ export class AuthService {
           localStorage.setItem("user", JSON.stringify(response.data))
           this.currentUserSubject.next(response.data)
         } else if (response && response.id) {
-
           localStorage.setItem("user", JSON.stringify(response))
           this.currentUserSubject.next(response)
         }

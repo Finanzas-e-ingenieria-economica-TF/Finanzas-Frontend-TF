@@ -23,7 +23,7 @@ export class BonoService {
   constructor(private http: HttpClient) {}
 
   getBonos(): Observable<Bono[]> {
-    return this.http.get<Bono[]>(`${this.apiUrl}/bonos`).pipe(
+    return this.http.get<Bono[]>(`${this.apiUrl}/api/bonos`).pipe(
       tap((bonos) => {
         this.bonos = bonos
         this.bonosSubject.next(bonos)
@@ -36,7 +36,7 @@ export class BonoService {
   }
 
   getBonoById(id: number): Observable<Bono | undefined> {
-    return this.http.get<Bono>(`${this.apiUrl}/bonos/${id}`).pipe(
+    return this.http.get<Bono>(`${this.apiUrl}/api/bonos/${id}`).pipe(
       catchError((error) => {
         console.error("Error obteniendo bono:", error)
         return throwError(() => error)
@@ -50,7 +50,7 @@ export class BonoService {
     console.log("Datos del bono a enviar:", bonoData)
 
     if (bono.id) {
-      return this.http.put<any>(`${this.apiUrl}/bonos/${bono.id}`, bonoData).pipe(
+      return this.http.put<any>(`${this.apiUrl}/api/bonos/${bono.id}`, bonoData).pipe(
         map((response) => response.bono || response),
         tap(() => this.refreshBonos()),
         catchError((error) => {
@@ -60,7 +60,7 @@ export class BonoService {
         }),
       )
     } else {
-      return this.http.post<any>(`${this.apiUrl}/bonos`, bonoData).pipe(
+      return this.http.post<any>(`${this.apiUrl}/api/bonos`, bonoData).pipe(
         map((response) => response.bono || response),
         tap(() => this.refreshBonos()),
         catchError((error) => {
@@ -73,7 +73,7 @@ export class BonoService {
   }
 
   deleteBono(id: number): Observable<boolean> {
-    return this.http.delete<any>(`${this.apiUrl}/bonos/${id}`).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/api/bonos/${id}`).pipe(
       map(() => true),
       tap(() => this.refreshBonos()),
       catchError((error) => {
@@ -84,7 +84,7 @@ export class BonoService {
   }
 
   getResumenBonos(): Observable<ResumenBonos> {
-    return this.http.get<ResumenBonos>(`${this.apiUrl}/bonos/resumen`).pipe(
+    return this.http.get<ResumenBonos>(`${this.apiUrl}/api/bonos/resumen`).pipe(
       catchError((error) => {
         console.error("Error obteniendo resumen:", error)
         return throwError(() => error)
@@ -125,7 +125,7 @@ export class BonoService {
     }
 
     const tasaEfectivaPeriodica = this.calcularTasaEfectivaPeriodica(bono)
-    // MÉTODO ALEMÁN: Amortización constante
+
     const cuotaAmortizacion = bono.valorNominal / periodosAmortizacion
 
     let saldo = bono.valorNominal
@@ -152,7 +152,6 @@ export class BonoService {
         cuotaPeriodo = interes
         // El saldo NO cambia en gracia parcial
       } else {
-        // PERÍODO NORMAL: Método alemán (amortización constante)
         amortizacion = cuotaAmortizacion
         cuotaPeriodo = amortizacion + interes
         saldo = saldo - amortizacion

@@ -83,7 +83,7 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/auth/register`, userData).pipe(
+    return this.http.post<any>(`${this.apiUrl}/api/auth/register`, userData).pipe(
       tap((response: any) => {
         console.log("Register response:", response)
       }),

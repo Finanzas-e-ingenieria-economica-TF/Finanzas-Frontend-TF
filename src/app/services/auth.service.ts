@@ -65,7 +65,7 @@ export class AuthService {
     const loginData: LoginRequest = { username, password }
     console.log("Login attempt for user:", username)
 
-    return this.http.post<LoginResponse>(`${this.apiUrl}/api/auth/login`, loginData).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, loginData).pipe(
       tap((response: LoginResponse) => {
         console.log("Login successful, response:", response)
 
@@ -83,7 +83,7 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/api/auth/register`, userData).pipe(
+    return this.http.post<any>(`${this.apiUrl}/auth/register`, userData).pipe(
       tap((response: any) => {
         console.log("Register response:", response)
       }),
@@ -96,7 +96,7 @@ export class AuthService {
   }
 
   changePassword(passwordData: ChangePasswordRequest): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/api/auth/change-password`, passwordData).pipe(
+    return this.http.put<any>(`${this.apiUrl}/auth/change-password`, passwordData).pipe(
       tap((response: any) => {
         console.log("Change password response:", response)
       }),
@@ -117,7 +117,7 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/api/auth/me`).pipe(
+    return this.http.get<User>(`${this.apiUrl}/auth/me`).pipe(
       tap((user: User) => {
         console.log("Current user response:", user)
         localStorage.setItem("user", JSON.stringify(user))
@@ -131,7 +131,7 @@ export class AuthService {
   }
 
   updateProfile(userData: RegisterRequest): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/api/auth/profile`, userData).pipe(
+    return this.http.put<any>(`${this.apiUrl}/auth/profile`, userData).pipe(
       tap((response: any) => {
         console.log("Profile update response:", response)
 

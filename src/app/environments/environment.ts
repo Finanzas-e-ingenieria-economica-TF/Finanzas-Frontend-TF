@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: "https://finanzas-backend-tf-production.up.railway.app",
+  apiUrl: "https://finanzas-backend-production.up.railway.app",
 }

@@ -8,27 +8,26 @@ import { MatSnackBar } from "@angular/material/snack-bar"
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router)
   const snackBar = inject(MatSnackBar)
-
-
   const token = localStorage.getItem("token")
 
 
-  let authReq = req
+  let authReq = req.clone({
+    withCredentials: true,
+  })
+
   if (token) {
-    authReq = req.clone({
+    authReq = authReq.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
       },
     })
   }
 
-
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       console.error("HTTP Error:", error)
 
       if (error.status === 401 || error.status === 403) {
-
         localStorage.removeItem("token")
         localStorage.removeItem("user")
         localStorage.removeItem("isLoggedIn")
